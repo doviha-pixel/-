@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>חשב מלווה — בית חב״ד כרמי גת</title>
+  <meta name="theme-color" content="#111827" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">חשב מלווה · בית חב״ד כרמי גת</div>
+      <h1>חדר מצב פיננסי חי</h1>
+    </div>
+    <div class="status-wrap">
+      <span id="connectionBadge" class="badge neutral">מתחבר…</span>
+      <button id="refreshBtn" class="refresh">רענן עכשיו</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="situation">חדר מצב</button>
+    <button class="tab" data-tab="goals">יעדים ותמריץ</button>
+    <button class="tab" data-tab="income">הכנסות וגבייה</button>
+    <button class="tab" data-tab="cashflow">תזרים 14 יום</button>
+    <button class="tab" data-tab="debts">חובות וסיכונים</button>
+    <button class="tab" data-tab="budget">תקציב ופער מבני</button>
+    <button class="tab" data-tab="decisions">החלטות</button>
+  </nav>
+
+  <main>
+    <section class="panel active" id="situation">
+      <div class="hero">
+        <div>
+          <div class="hero-label">פער תחזיתי עד <span id="targetDateLabel">—</span> בתוך המסגרות המאושרות</div>
+          <div class="hero-value" id="forecastGap">—</div>
+          <div class="hero-sub">לאחר הכנסות צפויות, זיכויי אשראי והו״ק שיכולים להפוך לנזילות עד היעד. המסגרת אינה הכנסה; היא משמשת רק כגשר מאושר לפי המדיניות.</div>
+        </div>
+        <div class="traffic" id="traffic">—</div>
+      </div>
+
+      <div class="kpis" id="situationKpis"></div>
+
+      <div class="grid two">
+        <article class="card">
+          <div class="card-title">נזילות ומסגרות</div>
+          <div id="liquidityTable"></div>
+        </article>
+        <article class="card">
+          <div class="card-title">בקרת נתונים</div>
+          <div id="syncStatus"></div>
+        </article>
+      </div>
+
+      <div class="grid two">
+        <article class="card">
+          <div class="card-title">14 הימים הקרובים</div>
+          <div id="nearCashflow"></div>
+        </article>
+        <article class="card">
+          <div class="card-title">אדום — החלטות / סיכונים</div>
+          <div id="redItems"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="goals">
+      <div class="goal-hero">
+        <div>
+          <div class="hero-label">יעד העבודה הקרוב</div>
+          <div class="goal-name" id="goalName">—</div>
+          <div class="hero-value" id="goalRemaining">—</div>
+          <div class="hero-sub" id="goalMeta">—</div>
+        </div>
+        <div class="goal-ring"><span id="goalPct">0%</span></div>
+      </div>
+      <div class="progress"><div class="progress-fill" id="goalProgress"></div></div>
+      <div class="kpis" id="goalKpis"></div>
+      <div class="grid two">
+        <article class="card"><div class="card-title">הצלחות מאז קו הבסיס</div><div id="successList"></div></article>
+        <article class="card"><div class="card-title">מה נחשב הצלחה</div><div class="policy-note">כסף שנכנס, הכנסה חדשה ודאית שנוצרה, גבייה שהושלמה, חיסכון מאומת, דחייה מאושרת שמקטינה צורך ללא סיכון גבוה יותר, או הכנסה חודשית קבועה חדשה. אשראי חדש, העברה פנימית והכנסה שכבר הייתה בבייסליין — לא נספרים כהצלחה.</div></article>
+      </div>
+    </section>
+
+    <section class="panel" id="income">
+      <div class="section-head"><div><h2>הכנסות וגבייה</h2><p>שלוש שכבות: בפועל → נגבה וטרם זוכה → טרם נגבה.</p></div></div>
+      <div class="kpis" id="incomeKpis"></div>
+      <div class="grid two">
+        <article class="card"><div class="card-title">נגבה — טרם זוכה בבנק</div><div id="batchTable"></div></article>
+        <article class="card"><div class="card-title">הו״ק — טרם נגבו</div><div id="hokTable"></div></article>
+      </div>
+    </section>
+
+    <section class="panel" id="cashflow">
+      <div class="section-head"><div><h2>תזרים 14 יום</h2><p>כל שורה מסומנת לפי בפועל / התחייבות קיימת / תחזית / אפשרות בלבד.</p></div></div>
+      <article class="card"><div id="cashflowTable"></div></article>
+    </section>
+
+    <section class="panel" id="debts">
+      <div class="section-head"><div><h2>חובות וסיכונים</h2><p>מדורגים לפי סיכון לארגון, לא לפי לחץ הנושה.</p></div></div>
+      <div class="kpis" id="debtKpis"></div>
+      <article class="card"><div id="debtTable"></div></article>
+    </section>
+
+    <section class="panel" id="budget">
+      <div class="section-head"><div><h2>תקציב ופער מבני</h2><p>הפער המבני כולל שירות חוב. פער תפעולי לפני שירות חוב מוצג כמדד עזר בלבד.</p></div></div>
+      <article class="card"><div id="budgetTable"></div></article>
+    </section>
+
+    <section class="panel" id="decisions">
+      <div class="section-head"><div><h2>החלטות פיננסיות</h2><p>החלטות מהותיות עם כלל מדיניות, סיכון והמלצת החשב.</p></div></div>
+      <article class="card"><div id="decisionList"></div></article>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <footer>מקור אמת תפעולי: Airtable · רענון אוטומטי כל 5 דקות · <span id="lastUpdated">טרם עודכן</span></footer>
+  <script src="/app.js" defer></script>
+</body>
+</html>
