@@ -1,0 +1,1 @@
+Live financial dashboard source is ready for Netlify continuous deployment.
