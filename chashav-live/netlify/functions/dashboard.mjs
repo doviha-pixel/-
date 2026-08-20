@@ -4,7 +4,7 @@ import {transform} from './lib/transform.mjs';
 function env(name){const n=globalThis.Netlify;return n?.env?.get?n.env.get(name):undefined}
 
 export default async ()=>{
-  const token=env('AIRTABLE_TOKEN');
+  const token=env('AIRTABLE_TOKEN')||env('airtable_token');
   if(!token)return Response.json({connected:false,reason:'AIRTABLE_TOKEN_MISSING',message:'האתר הועלה, אך חיבור Airtable טרם הופעל בצד השרת.'},{status:503,headers:{'Cache-Control':'no-store'}});
   try{
     const [liquidityRaw,cashflowRaw,batchesRaw,hokRaw,debtsRaw,budgetRaw,goalsRaw,decisionsRaw,syncRaw]=await Promise.all([
