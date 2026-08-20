@@ -1,0 +1,9 @@
+{
+  "name": "chashav-carmi-gat-live",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Live financial controller dashboard for Beit Chabad Carmi Gat",
+  "scripts": {
+    "dev": "netlify dev"
+  }
+}
