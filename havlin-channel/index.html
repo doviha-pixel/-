@@ -19,9 +19,36 @@
 </main>
 <main id="categoryPage" class="category-page"><div class="wrap"><div class="topbar"><button class="back" onclick="goHome()">← חזרה לכל הקטגוריות</button><div class="mini-brand">ערוץ הבלין</div></div><div id="categoryHead" class="category-head"></div><h2 class="movies-title">הסרטים בקטגוריה</h2><div id="movieGrid" class="movies"></div><div class="admin-note">עריכת תיאורים והוספת סרטים תיפתח רק במצב מנהל.</div></div></main>
 <script>
-const SB_URL="https://xckwiluizodplxisiiud.supabase.co";const SB_KEY="sb_publishable_iFQiLIlqAOHE5Cozl9EGbQ_jJKZVKbL";let categories=[],videos=[];
+const SB_URL="https://xckwiluizodplxisiiud.supabase.co";const SB_KEY="sb_publishable_iFQiLIlqAOHE5Cozl9EGbQ_jJKZVKbL";
+const FALLBACK_CATEGORIES=[
+{id:"fallback-matach",slug:"matach",title:"סרטי מטח",subtitle:"",description:""},
+{id:"fallback-funny",slug:"funny",title:"סרטים מצחיקים",subtitle:"",description:""},
+{id:"fallback-games",slug:"games",title:"משחקים",subtitle:"",description:""},
+{id:"fallback-recent",slug:"recent",title:"סרטים שיצאו לאחרונה",subtitle:"",description:""},
+{id:"fallback-add",slug:"you-can-add",title:"סרטים שאתם יכולים להוסיף",subtitle:"",description:""},
+{id:"fallback-malima",slug:"malima",title:"סרטי מאלימא",subtitle:"מנדלה • ארי • לוי • יהודה • מושי • איטה",description:""},
+{id:"fallback-clips",slug:"clips",title:"קליפים",subtitle:"",description:""}
+];
+let categories=[...FALLBACK_CATEGORIES],videos=[];
 async function api(path){const res=await fetch(SB_URL+"/rest/v1/"+path,{headers:{apikey:SB_KEY}});if(!res.ok)throw new Error("טעינת הנתונים נכשלה");return res.json()}
-async function loadData(){try{[categories,videos]=await Promise.all([api("havlin_categories?select=*&order=sort_order.asc"),api("havlin_videos?select=*&order=sort_order.asc,created_at.desc")]);renderCategories();const slug=new URLSearchParams(location.hash.replace(/^#/,"")).get("category");if(slug)openCategory(slug,false)}catch(e){document.getElementById("categoryGrid").innerHTML='<div class="error">לא הצלחנו לטעון כרגע את התוכן. נסו שוב בעוד רגע.</div>'}}
+async function loadData(){
+renderCategories();
+const initialSlug=new URLSearchParams(location.hash.replace(/^#/,"")).get("category");
+if(initialSlug)openCategory(initialSlug,false);
+try{
+  const [remoteCategories,remoteVideos]=await Promise.all([
+    api("havlin_categories?select=*&order=sort_order.asc"),
+    api("havlin_videos?select=*&order=sort_order.asc,created_at.desc")
+  ]);
+  if(Array.isArray(remoteCategories)&&remoteCategories.length) categories=remoteCategories;
+  if(Array.isArray(remoteVideos)) videos=remoteVideos;
+  renderCategories();
+  const slug=new URLSearchParams(location.hash.replace(/^#/,"")).get("category");
+  if(slug)openCategory(slug,false);
+}catch(e){
+  console.warn("Using built-in categories because live data could not be loaded.",e);
+}
+}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function renderCategories(){document.getElementById("categoryGrid").innerHTML=categories.map(c=>`<article class="cat" onclick="openCategory('${encodeURIComponent(c.slug)}')"><h3>${esc(c.title)}</h3>${c.subtitle?'<p>'+esc(c.subtitle)+'</p>':'<p>לחצו כדי להיכנס לקטגוריה</p>'}<div class="open">פתיחה ←</div></article>`).join("")}
 function openCategory(encodedSlug,push=true){const slug=decodeURIComponent(encodedSlug),c=categories.find(x=>x.slug===slug);if(!c)return;if(push)history.pushState({category:slug},"","#category="+encodeURIComponent(slug));document.getElementById("home").style.display="none";document.getElementById("categoryPage").style.display="block";scrollTo(0,0);const desc=c.description&&c.description.trim()?esc(c.description):"כאן יופיע הטקסט שתכתוב על הקטגוריה הזאת.";const emptyClass=c.description&&c.description.trim()?"":" empty";document.getElementById("categoryHead").innerHTML=`<h1>${esc(c.title)}</h1>${c.subtitle?'<div class="subtitle">'+esc(c.subtitle)+'</div>':''}<div class="description${emptyClass}">${desc}</div>`;const rows=videos.filter(v=>v.category_id===c.id);document.getElementById("movieGrid").innerHTML=rows.length?rows.map(v=>`<article class="movie"><div class="screen"><div class="play">▶</div></div><h3>${esc(v.title)}</h3>${v.description?'<p>'+esc(v.description)+'</p>':''}${v.video_url?'<a href="'+esc(v.video_url)+'" target="_blank" rel="noopener">לצפייה בסרט ←</a>':''}</article>`).join(""):`<div class="empty-state">עדיין לא נוספו סרטים לקטגוריה הזאת.<br>כשנוסיף סרטים — הם יופיעו כאן בכרטיסים.</div>`}
